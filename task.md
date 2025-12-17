@@ -65,3 +65,13 @@
 | enroll_date | DATE | Дата запису |
 
 ### **progress**
+
+### **progress**
+
+| Поле | Тип | Опис |
+| --- | --- | --- |
+| progress_id | SERIAL PK | ID прогресу |
+| enrollment_id | INT FK | Запис |
+| lesson_number | INT | Номер уроку |
+| score | NUMERIC | Оцінка |
+| completed | BOOLEAN | Чи завершено |

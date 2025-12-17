@@ -148,3 +148,31 @@ INSERT INTO progress (enrollment_id, lesson_number, score, completed) VALUES
 (15, 1, 82, TRUE),
 (15, 2, 85, TRUE),
 (15, 3, 88, TRUE);
+
+-- Select
+
+SELECT *
+FROM students
+WHERE reg_date > '2024-01-01';
+
+SELECT *
+FROM courses
+WHERE course_name > 'Data Science';
+
+-- Agg
+
+SELECT city, COUNT(student_id)
+FROM students
+GROUP BY city;
+
+SELECT category, COUNT(course_id)
+FROM courses
+GROUP BY category
+
+SELECT c.course_name, AVG(p.score)
+FROM progress p
+JOIN enrollments e ON p.enrollment_id = e.enrollment_id
+JOIN courses c ON c.course_id = e.course_id
+GROUP BY c.course_name
+ORDER BY avg DESC
+
