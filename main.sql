@@ -167,12 +167,62 @@ GROUP BY city;
 
 SELECT category, COUNT(course_id)
 FROM courses
-GROUP BY category
+GROUP BY category;
 
-SELECT c.course_name, AVG(p.score)
+SELECT c.course_name, ROUND(AVG(p.score))
 FROM progress p
 JOIN enrollments e ON p.enrollment_id = e.enrollment_id
 JOIN courses c ON c.course_id = e.course_id
-GROUP BY c.course_name
-ORDER BY avg DESC
+GROUP BY c.course_name;
 
+-- JOIN аналіз
+SELECT c.course_name, i.full_name
+FROM courses c
+JOIN instructors i ON c.instructor_id = i.instructor_id;
+
+SELECT s.full_name, c.course_name
+FROM courses c
+JOIN enrollments e ON c.course_id = e.course_id
+JOIN students s ON e.student_id = s.student_id;
+
+SELECT i.full_name, COUNT (e.student_id)
+FROM instructors i
+JOIN courses c ON c.instructor_id = i.instructor_id
+JOIN enrollments e ON c.course_id = e.course_id
+GROUP BY i.full_name;
+
+-- АНАЛІТИКА
+
+SELECT s.full_name, AVG(p.score) AS average_score
+FROM progress p
+JOIN enrollments e ON p.enrollment_id = e.enrollment_id
+JOIN students s ON s.student_id = e.student_id
+GROUP BY s.full_name;
+
+SELECT c.course_name, (COUNT(p.completed) FILTER (WHERE completed) * 100) / COUNT(p.lesson_number) AS persent_of_fin_lessons
+FROM progress p
+JOIN enrollments e ON p.enrollment_id = e.enrollment_id
+JOIN courses c ON c.course_id = e.course_id
+GROUP BY c.course_name;
+
+SELECT s.full_name, (COUNT(p.completed) FILTER (WHERE completed) * 100) / COUNT(p.lesson_number) AS persent_of_fin_lessons
+FROM progress p
+JOIN enrollments e ON p.enrollment_id = e.enrollment_id
+JOIN students s ON s.student_id = e.student_id
+GROUP BY s.full_name
+
+-- Віконні функції
+SELECT s.full_name, 
+RANK() OVER (ORDER BY AVG(p.score) DESC) AS rank
+FROM progress p
+JOIN enrollments e ON p.enrollment_id = e.enrollment_id
+JOIN students s ON s.student_id = e.student_id
+GROUP BY s.full_name;
+
+
+SELECT s.full_name,
+  SUM(p.completed::int) OVER (ORDER BY p.lesson_number) AS completed_lessons
+FROM students s
+JOIN enrollments e ON s.student_id = e.student_id
+JOIN progress p ON p.enrollment_id = e.enrollment_id
+-- HAVING s.full_name
