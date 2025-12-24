@@ -220,9 +220,15 @@ JOIN students s ON s.student_id = e.student_id
 GROUP BY s.full_name;
 
 
-SELECT s.full_name,
-  SUM(p.completed::int) OVER (ORDER BY p.lesson_number) AS completed_lessons
+SELECT
+    s.full_name,
+  e.enroll_date,
+    e.course_id,
+    SUM(CASE WHEN p.completed THEN 1 ELSE 0 END)
+        OVER (PARTITION BY s.student_id ORDER BY e.enroll_date, p.lesson_number) 
+        AS cumulative_completed
 FROM students s
 JOIN enrollments e ON s.student_id = e.student_id
-JOIN progress p ON p.enrollment_id = e.enrollment_id
--- HAVING s.full_name
+JOIN progress p ON e.enrollment_id = p.enrollment_id
+ORDER BY s.student_id, e.enroll_date, p.lesson_number;
+
